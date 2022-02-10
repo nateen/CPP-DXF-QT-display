@@ -1,0 +1,5 @@
+﻿  main.cpp
+  test_creationclass.cpp
+D:\QT_temp\Project3\Project3\test_creationclass.cpp(150,23): warning C4018: “<”: 有符号/无符号不匹配
+  正在生成代码...
+  Project3.vcxproj -> D:\QT_temp\Project3\Debug\Project3.exe
