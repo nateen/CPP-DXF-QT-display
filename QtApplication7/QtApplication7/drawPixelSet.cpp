@@ -25,11 +25,11 @@ DrawPixelSet::~DrawPixelSet() {
 
 void DrawPixelSet::Run() {
     clock_t startTime,endTime;
-    startTime = clock();//¼ÆÊ±¿ªÊ¼
+    startTime = clock();//è®¡æ—¶å¼€å§‹
     QImage* image;
     image = new QImage(1280, 960, QImage::Format_RGB32);
 
-    // Í¿±³¾°ÑÕÉ«
+    // æ¶‚èƒŒæ™¯é¢œè‰²
     QPainter* painter = new QPainter();
     painter->begin(image);
     painter->setPen(QPen(Qt::white, 1));
@@ -37,65 +37,74 @@ void DrawPixelSet::Run() {
     painter->drawRect(0, 0, 1280, 960);
     painter->end();
 
-    //// »­Ë®Éîµã
-    //// ´óµØ×ø±ê×ªÆÁÄ»ÖĞĞÄ×ø±êÏµ×ø±ê
-    //for (int k = 0; k < depthQuantity; k++) {
-    //    double psi = 90 * 3.14159 / 180;
-    //    double cos_psi = std::cos(psi);
-    //    double sin_psi = std::sin(psi);
-    //    // »­ÃæÖĞĞÄ×ø±êÏµ
-    //    double temp = d[k][0];
-    //    double temp1 = d[k][1];
-    //    double x1s_ = d[k][0] * cos_psi + d[k][1] * sin_psi - X0 * cos_psi - Y0 * sin_psi;
-    //    double y1s_ = d[k][1] * cos_psi - d[k][0] * sin_psi - Y0 * cos_psi + X0 * sin_psi;
-    //    // ÆÁÄ»×ø±ê
-    //    double x1s = x1s_ / ratio + 640;
-    //    double y1s = y1s_ / ratio + 480;
+    // ç”»æ°´æ·±ç‚¹
+    // å¤§åœ°åæ ‡è½¬å±å¹•ä¸­å¿ƒåæ ‡ç³»åæ ‡
+    for (int k = 0; k < depthQuantity; k++) {
+        double psi = 90 * 3.14159 / 180;
+        double cos_psi = std::cos(psi);
+        double sin_psi = std::sin(psi);
+        // ç”»é¢ä¸­å¿ƒåæ ‡ç³»
+        double temp = d[k][0];
+        double temp1 = d[k][1];
+        double x1s_ = d[k][0] * cos_psi + d[k][1] * sin_psi - X0 * cos_psi - Y0 * sin_psi;
+        double y1s_ = d[k][1] * cos_psi - d[k][0] * sin_psi - Y0 * cos_psi + X0 * sin_psi;
+        // å±å¹•åæ ‡
+        double x1s = x1s_ / ratio + 640;
+        double y1s = y1s_ / ratio + 480;
 
-    //    this->d2[k][0] = x1s;
-    //    this->d2[k][1] = y1s;
-    //    this->d2[k][2] = d[k][2];
-    //    this->d2[k][3] = d[k][3];
-    //    this->d2[k][4] = d[k][4];
-    //    this->d2[k][5] = d[k][5];
-    //}
-    //int space = depthQuantity / 1000 + 1;
-    //for (int kk = 0; kk < this->depthQuantity; kk+= space) {
-    //    int xx = d2[kk][0];
-    //    int yy = d2[kk][1];
-    //    int xRangeMin = 0;
-    //    int xRangeMax = 1280;
-    //    int yRangeMin = 0;
-    //    int yRangeMax = 960;
-    //    if (xx > xRangeMin && xx < xRangeMax && yy > yRangeMin && yy < yRangeMax) {
-    //        DrawNumber(image, d2[kk][2], d2[kk][3], d2[kk][4], d2[kk][5], d2[kk][0], d2[kk][1]);
-    //    }
-    //}
+        this->d2[k][0] = x1s;
+        this->d2[k][1] = y1s;
+        this->d2[k][2] = d[k][2];
+        this->d2[k][3] = d[k][3];
+        this->d2[k][4] = d[k][4];
+        this->d2[k][5] = d[k][5];
+    }
+    int space = depthQuantity / 1000 + 1;
+    for (int kk = 0; kk < this->depthQuantity; kk+= space) {
+        int xx = d2[kk][0];
+        int yy = d2[kk][1];
+        int xRangeMin = 0;
+        int xRangeMax = 1280;
+        int yRangeMin = 0;
+        int yRangeMax = 960;
+        if (xx > xRangeMin && xx < xRangeMax && yy > yRangeMin && yy < yRangeMax) {
+            DrawNumber(image, d2[kk][2], d2[kk][3], d2[kk][4], d2[kk][5], d2[kk][0], d2[kk][1]);
+        }
+    }
 
-    //// »­dxf
-    // ÕæÊµ×ø±ê×ª»­²¼×ø±ê ¸ßË¹×ø±ê×ª»»
+    //// ç”»dxf
+    // çœŸå®åæ ‡è½¬ç”»å¸ƒåæ ‡ é«˜æ–¯åæ ‡è½¬æ¢
     double psi = 90 * 3.14159 / 180;
     double cos_psi = std::cos(psi);
     double sin_psi = std::sin(psi);
     for (int i = 0; i < pixelSetList.size(); i++) {
         pixelSetList[i].points.clear();
-        // »­ÃæÖĞĞÄ×ø±êÏµ
+        // ç”»é¢ä¸­å¿ƒåæ ‡ç³»
         double x1s_ = pixelSetList[i].x1 * cos_psi + pixelSetList[i].y1 * sin_psi - X0 * cos_psi - Y0 * sin_psi;
         double y1s_ = pixelSetList[i].y1 * cos_psi - pixelSetList[i].x1 * sin_psi - Y0 * cos_psi + X0 * sin_psi;
         double x2s_ = pixelSetList[i].x2 * cos_psi + pixelSetList[i].y2 * sin_psi - X0 * cos_psi - Y0 * sin_psi;
         double y2s_ = pixelSetList[i].y2 * cos_psi - pixelSetList[i].x2 * sin_psi - Y0 * cos_psi + X0 * sin_psi;
-        // ÆÁÄ»×ø±ê
+        // å±å¹•åæ ‡
         double x1s = x1s_ /  ratio + 640;
         double y1s = y1s_ / ratio + 480;
         double x2s = x2s_ / ratio + 640;
         double y2s = y2s_ / ratio + 480;
 
-        DrawLine_Bresenham(x1s, y1s, x2s, y2s, pixelSetList[i]);
-        int xRangeMin = 0;
-        int xRangeMax = 1280;
-        int yRangeMin = 0;
-        int yRangeMax = 960;
-        pixelSetList[i].paint(image, xRangeMin, xRangeMax, yRangeMin, yRangeMax);
+        // ç‚¹åˆ°çº¿æ®µçš„æœ€çŸ­è·ç¦»,åˆ¤æ–­è¯¥çº¿æ®µæ˜¯å¦æœ‰éƒ¨åˆ†è¿›å…¥ç”»é¢
+        double A = pixelSetList[i].y1 - pixelSetList[i].y2;
+        double B = pixelSetList[i].x2 - pixelSetList[i].x1;
+        double C = pixelSetList[i].x1 * pixelSetList[i].y2 - pixelSetList[i].x2 * pixelSetList[i].y1;
+        double d0 = std::abs(A * X0 + B * Y0 + C) / std::sqrt(A * A + B * B);
+        double d1 = std::sqrt((pixelSetList[i].x1 - X0) * (pixelSetList[i].x1 - X0) + (pixelSetList[i].y1 - Y0) * (pixelSetList[i].y1 - Y0));
+        double d2 = std::sqrt((pixelSetList[i].x2 - X0) * (pixelSetList[i].x2 - X0) + (pixelSetList[i].y2 - Y0) * (pixelSetList[i].y2 - Y0));
+        if (d0 < 1600 * ratio || d1 < 1600 * ratio || d2 < 1600 * ratio) {
+            DrawLine_Bresenham(x1s, y1s, x2s, y2s, pixelSetList[i]);
+            int xRangeMin = 0;
+            int xRangeMax = 1280;
+            int yRangeMin = 0;
+            int yRangeMax = 960;
+            pixelSetList[i].paint(image, xRangeMin, xRangeMax, yRangeMin, yRangeMax);
+        }
     }
 
     QPixmap imagePixmap = QPixmap::fromImage(*image);
@@ -110,8 +119,8 @@ void DrawPixelSet::Run() {
 void DrawPixelSet::LoadDxf() {
     std::ifstream infile;
     std::string file = "D:\\QT_temp\\Project3\\Project3\\out.txt";
-    infile.open(file.data());   //½«ÎÄ¼şÁ÷¶ÔÏóÓëÎÄ¼şÁ¬½ÓÆğÀ´ 
-    assert(infile.is_open());   //ÈôÊ§°Ü,ÔòÊä³ö´íÎóÏûÏ¢,²¢ÖÕÖ¹³ÌĞòÔËĞĞ 
+    infile.open(file.data());   //å°†æ–‡ä»¶æµå¯¹è±¡ä¸æ–‡ä»¶è¿æ¥èµ·æ¥ 
+    assert(infile.is_open());   //è‹¥å¤±è´¥,åˆ™è¾“å‡ºé”™è¯¯æ¶ˆæ¯,å¹¶ç»ˆæ­¢ç¨‹åºè¿è¡Œ 
 
     std::string s;
     int pixelID = 0;
@@ -120,8 +129,8 @@ void DrawPixelSet::LoadDxf() {
         std::cout << s << std::endl;
 
         std::string::size_type pos1, pos2;
-        std::string c = ",";    //·Ö¸ô·û
-        std::vector<std::string> v;   //´¢´æ·Ö¸î³öµÄ×Ö·û
+        std::string c = ",";    //åˆ†éš”ç¬¦
+        std::vector<std::string> v;   //å‚¨å­˜åˆ†å‰²å‡ºçš„å­—ç¬¦
         pos2 = s.find(c);
         pos1 = 0;
         while (std::string::npos != pos2)
@@ -148,8 +157,8 @@ void DrawPixelSet::LoadDxf() {
 void DrawPixelSet::LoadXyz() {
     std::ifstream infile;
     std::string file = "D:\\QT_temp\\Project3\\Project3\\depth.txt";
-    infile.open(file.data());   //½«ÎÄ¼şÁ÷¶ÔÏóÓëÎÄ¼şÁ¬½ÓÆğÀ´ 
-    assert(infile.is_open());   //ÈôÊ§°Ü,ÔòÊä³ö´íÎóÏûÏ¢,²¢ÖÕÖ¹³ÌĞòÔËĞĞ 
+    infile.open(file.data());   //å°†æ–‡ä»¶æµå¯¹è±¡ä¸æ–‡ä»¶è¿æ¥èµ·æ¥ 
+    assert(infile.is_open());   //è‹¥å¤±è´¥,åˆ™è¾“å‡ºé”™è¯¯æ¶ˆæ¯,å¹¶ç»ˆæ­¢ç¨‹åºè¿è¡Œ 
 
     std::string s;
     int pixelID = 0;
@@ -158,8 +167,8 @@ void DrawPixelSet::LoadXyz() {
     {
         std::cout << s << std::endl;
         std::string::size_type pos1, pos2;
-        std::string c = ",";    //·Ö¸ô·û
-        std::vector<std::string> v;   //´¢´æ·Ö¸î³öµÄ×Ö·û
+        std::string c = ",";    //åˆ†éš”ç¬¦
+        std::vector<std::string> v;   //å‚¨å­˜åˆ†å‰²å‡ºçš„å­—ç¬¦
         pos2 = s.find(c);
         pos1 = 0;
         while (std::string::npos != pos2)
@@ -230,11 +239,11 @@ void DrawPixelSet::mouseMoveEvent(QMouseEvent* event) {
 }
 
 void DrawPixelSet::wheelEvent(QWheelEvent* event) {
-    double oneloop = event->delta() / 120;//×ªÒ»È¦»¯³Éµ¥Î»1
-    if (event->delta() > 0) {//Ç°¹ö
+    double oneloop = event->delta() / 120;//è½¬ä¸€åœˆåŒ–æˆå•ä½1
+    if (event->delta() > 0) {//å‰æ»š
         this->ratio -= oneloop * this->ratio / 10;
     }
-    else {//µ±¹öÂÖÏòÊ¹ÓÃÕß·½ÏòĞı×ªÊ±
+    else {//å½“æ»šè½®å‘ä½¿ç”¨è€…æ–¹å‘æ—‹è½¬æ—¶
         this->ratio -= oneloop * this->ratio / 10;
     }
     Run();
